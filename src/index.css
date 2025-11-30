@@ -1,0 +1,9 @@
+@import "tailwindcss";
+* {
+  transition: 0.3s;
+}
+
+body {
+  background-position: center;
+  background-size: cover;
+}
