@@ -5,10 +5,12 @@ import NavBar from "./components/NavBar.jsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Login } from "./components/Login.jsx";
 import SignUp from "./components/Signup.jsx";
+import { ToastContainer } from "react-toastify";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <main className="flex gap-2">
+      <ToastContainer />
       <NavBar />
       <Routes>
         <Route path="/" element={<App />} />
@@ -18,4 +20,3 @@ createRoot(document.getElementById("root")).render(
     </main>
   </BrowserRouter>
 );
-
