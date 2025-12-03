@@ -9,8 +9,12 @@ export const inputStyle =
 export const primaryButton =
   "cursor-pointer bg-[blue] text-white rounded px-4 py-2 font-semibold shadow shadow-black";
 
-export const  dangerButton =
+export const dangerButton =
   "cursor-pointer bg-[red] text-white rounded px-4 py-2 font-semibold shadow shadow-black";
+
+export const imageStyle = "w-[100px] h-[100px]";
+
+// HELPER FUNCTIONS
 export const logout = () => {
   fetch("/api/logout").then((res) => {
     if (res.ok) {

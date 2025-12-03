@@ -99,22 +99,26 @@ app.get("/api/media/:fileName", async (req, res) => {
   if (!fileName) {
     return res.status(400).json({ message: "File name is required" });
   }
-  try {
-    const command = new GetObjectCommand({
-      Bucket: process.env.B2_BUCKET_NAME,
-      Key: fileName,
-    });
 
-    const getSignedUrlRes = await getSignedUrl(b2, command, {
-      expiresIn: 3600,
-    });
-    res.status(200).json({
-      signedUrl: getSignedUrlRes,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to generate signed URL" });
-  }
+  res.status(500).json({ error: "Failed to generate signed URL" });
+});
+
+app.get("/api/allposts", (req, res) => {
+  const allPosts = [];
+  User.find().then(async (users) => {
+    for (const user of users) {
+      const userPosts = await Promise.all(
+        user.posts.map(async (post) => ({
+          fileUrl: await getSignedUrlFunction(post.fileName),
+          caption: post.caption,
+          createdAt: post.createdAt,
+        }))
+      );
+      allPosts.push(...userPosts);
+    }
+    allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    res.status(200).json({ posts: allPosts });
+  });
 });
 
 app.get("/api/myposts", async (req, res) => {
@@ -132,6 +136,23 @@ app.get("/api/logout", async (req, res) => {
   res.clearCookie("social-media-app-token");
   return res.status(200).json({ message: "Logged Out successfully" });
 });
+
+async function getSignedUrlFunction(fileName) {
+  try {
+    const command = new GetObjectCommand({
+      Bucket: process.env.B2_BUCKET_NAME,
+      Key: fileName,
+    });
+
+    const getSignedUrlRes = await getSignedUrl(b2, command, {
+      expiresIn: 3600,
+    });
+    return getSignedUrlRes;
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
+}
 
 app.listen(6969, () => {
   console.log("server has started successfully ✅");
